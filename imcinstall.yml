@@ -1,0 +1,9 @@
+---
+- name: Silent IMC install
+  hosts: imcapp
+  remote_user: root
+  roles:
+    - common
+    - imcserver
+    - dbserver
+    - imcinstall

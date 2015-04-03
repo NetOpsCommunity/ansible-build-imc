@@ -1,0 +1,33 @@
+---
+# Playbook to configure MySQLD for IMC
+
+- name: ensure mysql packages installed
+  yum: name={{item}} state=installed
+  with_items:
+    - mysql-community-server  
+    - mysql-community-client  
+    - MySQL-python
+
+- name: Create Mysql configuration file
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+  notify: 
+    - restart mysql
+
+- name: Start Mysql Service
+  service: name=mysqld state=started enabled=yes
+
+- name: insert MySQL iptables rule
+  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="{{mysql_port}}" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport {{mysql_port}} -j ACCEPT" 
+  notify: restart iptables
+
+- name: Ensure MySQL root@localhost has password
+  mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL,GRANT host='localhost' state=present check_implicit_admin=yes
+
+- name: Set MySQL root password for other hosts
+  mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL,GRANT state=present check_implicit_admin=yes
+
+- name: Deletes anonymous MySQL server user for ansible_fqdn
+  mysql_user: user="" host="{{ ansible_nodename }}" state="absent" check_implicit_admin=yes
+
+- name: Deletes anonymous MySQL server user for localhost
+  mysql_user: user="" host="localhost" state="absent" check_implicit_admin=yes

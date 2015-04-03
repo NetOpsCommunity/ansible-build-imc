@@ -1,0 +1,8 @@
+---
+# Handler to handle IMC tier notifications
+
+- name: restart iptables
+  service: name=iptables state=restarted
+
+- name: restart imcdmsd
+  service: name=imcdmsd state=restarted

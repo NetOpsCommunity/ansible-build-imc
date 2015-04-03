@@ -1,0 +1,17 @@
+---
+# This task sets up common things on both DB & IMC Servers
+- name: Python libselinux
+  yum: name={{item}} state=installed
+  with_items:
+    - libselinux-python
+    - libsemanage-python
+
+# Would prefer to have SELinux enabled, but it's not easy with IMC
+- name: SELinux permissive
+  selinux: policy=targeted state=permissive
+# This is needed on both client & DB systems
+- name: mysql-community repo
+  copy: src=mysql-community.repo dest=/etc/yum.repos.d owner=root group=root mode=0644
+# This is not strictly needed on the App server, but it's helpful
+- name: my.cnf for root
+  template: src=root.my.cnf.j2 dest=/root/.my.cnf
