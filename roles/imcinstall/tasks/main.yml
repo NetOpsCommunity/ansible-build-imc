@@ -7,11 +7,14 @@
     - expect
     - xorg-x11-server-Xvfb
 
+- name: imc install directory
+  file: path=/root/install state=directory 
+
 - name: imc install script
-  copy: src=installsilence.sh dest=/root/install owner=root group=root mode=0755
+  copy: src=installsilence.sh dest=/root/install/installsilence.sh owner=root group=root mode=0755
 
 - name: imc expect script
-  copy: src=installer.tcl dest=/root/install owner=root group=root mode=0755
+  copy: src=installer.tcl dest=/root/install/installer.tcl owner=root group=root mode=0755
 
 - name: imc install cfg
   template: src=install.cfg.j2 dest=/root/install/install.cfg
