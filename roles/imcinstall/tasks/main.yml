@@ -23,6 +23,6 @@
 # Manually running /root/install/installer.tcl works, but I haven't tested it with Ansible
 
 # Post install, set IMC to auto-start
-#- name: set autostart
-#  lineinfile: dest=/opt/iMC/deploy/conf/dma.conf regexp=^autostart line=autostart=true
-#  notify: restart imcdmsd
+- name: set autostart
+  lineinfile: dest=/opt/iMC/deploy/conf/dma.conf regexp=^autostart line=autostart=true
+  notify: restart imcdmsd
