@@ -1,5 +1,11 @@
 ---
 # This task sets up common things on both DB & IMC Servers
+
+# If iptables has no existing ruleset, we don't want to try and add lines
+- name: Check if iptables rules already exist
+  stat: path=/etc/sysconfig/iptables
+  register: iptables
+
 - name: Python libselinux
   yum: name={{item}} state=installed
   with_items:
