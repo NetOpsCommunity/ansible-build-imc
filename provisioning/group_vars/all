@@ -1,0 +1,5 @@
+dbuser: root
+dbpassword: iMC123
+mysql_port: 3306
+http_port: 80
+https_port: 443

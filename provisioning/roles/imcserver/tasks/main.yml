@@ -1,0 +1,33 @@
+---
+# Playbook to configure IMC server ready for IMC install
+
+- name: ensure mysql-client installed
+  yum: name=mysql-community-client state=installed
+
+- name: ensure IMC prerequisite libraries installed
+  yum: name={{item}} state=installed
+  with_items:
+    - glibc.i686
+    - libaio.i686
+    - libgcc.i686
+    - libstdc++.i686
+    - ftp
+    - telnet
+    - ksh
+
+# This is used to set specific parameters for the following groupinstall
+- name: copy yum-groups.conf
+  copy: src=yum-groups.conf dest=/etc/yum/yum-groups.conf
+
+- name: Install X Window System
+  yum: name="@X Window System" state=installed conf_file=/etc/yum/yum-groups.conf
+
+- name: insert iptables http rule
+  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="dport {{http_port}} " insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport {{http_port}} -j ACCEPT" 
+  when: iptables.stat.exists == true
+  notify: restart iptables
+
+- name: insert iptables https rule
+  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="dport {{https_port}} " insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport {{https_port}} -j ACCEPT" 
+  when: iptables.stat.exists == true
+  notify: restart iptables

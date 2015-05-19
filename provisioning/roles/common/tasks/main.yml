@@ -1,0 +1,26 @@
+---
+# This task sets up common things on both DB & IMC Servers
+
+# If iptables has no existing ruleset, we don't want to try and add lines
+- name: Check if iptables rules already exist
+  stat: path=/etc/sysconfig/iptables
+  register: iptables
+
+- name: Python libselinux
+  yum: name={{item}} state=installed
+  with_items:
+    - libselinux-python
+    - libsemanage-python
+
+# Would prefer to have SELinux enabled, but it's not easy with IMC
+- name: SELinux permissive
+  selinux: policy=targeted state=permissive
+# This is needed on both client & DB systems
+- name: mysql-community repo
+  copy: src=mysql-community.repo dest=/etc/yum.repos.d owner=root group=root mode=0644
+# Since we do repo setup by file, not RPM, we need to manually install PGP key
+- name: mysql-community repo pgp key
+  copy: src=RPM-GPG-KEY-mysql dest=/etc/pki/rpm-gpg owner=root group=root mode=0644
+# This is not strictly needed on the App server, but it's helpful
+- name: my.cnf for root
+  template: src=root.my.cnf.j2 dest=/root/.my.cnf
