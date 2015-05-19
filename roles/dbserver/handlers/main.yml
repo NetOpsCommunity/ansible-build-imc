@@ -1,8 +1,0 @@
----
-# Handler to handle DB tier notifications
-
-- name: restart iptables
-  service: name=iptables state=restarted
-
-- name: restart mysql
-  service: name=mysqld state=restarted
