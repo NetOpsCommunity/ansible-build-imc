@@ -1,16 +1,14 @@
 ---
 - name: Prepare IMC MySQL server
   hosts: imcmysql
-  remote_user: vagrant
-  sudo: yes
+  become: root
   roles:
     - common
     - dbserver
 
 - name: Prepare IMC server
   hosts: imcapp
-  remote_user: vagrant
-  sudo: yes
+  become: root
   roles:
     - common
     - imcserver

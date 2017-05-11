@@ -6,29 +6,34 @@
   with_items:
     - expect
     - xorg-x11-server-Xvfb
+  become: true
 
 - name: imc install directory
   file: path=/root/install state=directory 
+  become: true
 
 - name: imc install script
   copy: src=installsilence.sh dest=/root/install/installsilence.sh owner=root group=root mode=0755
+  become: true
 
 - name: imc expect script
   copy: src=installer.tcl dest=/root/install/installer.tcl owner=root group=root mode=0755
+  become: true
 
 - name: imc install cfg
   template: src=install.cfg.j2 dest=/root/install/install.cfg
+  become: true
 
 # Do the actual installation
 # Note this assumes that install files exist under /vagrant/install
-- shell: /root/install/installer.tcl
-  args:
-    chdir: /root/install/
-    creates: /opt/iMC
+#- shell: /root/install/installer.tcl
+#  args:
+#    chdir: /root/install/
+#    creates: /opt/iMC
 
 # Get ready for patching
-- name: patch location
-  lineinfile: dest=/opt/iMC/deploy/conf/dma.conf line=default.compinst.path=/root/patch/linux/install/components
+#- name: patch location
+#  lineinfile: dest=/opt/iMC/deploy/conf/dma.conf line=default.compinst.path=/root/patch/linux/install/components
 
 # Insert script here to run patching
 # This script kicks off install process, but it needs interaction to complete install
@@ -37,7 +42,7 @@
 #   creates: /opt/iMC/deploy/components/iMC-PLAT/V700R001B03D006SP12/deploy.xml
 
 # Post install, set IMC to auto-start
-- name: set autostart
-  lineinfile: dest=/opt/iMC/deploy/conf/dma.conf regexp=^autostart line=autostart=true
-  notify: restart imcdmsd
+#- name: set autostart
+#  lineinfile: dest=/opt/iMC/deploy/conf/dma.conf regexp=^autostart line=autostart=true
+#  notify: restart imcdmsd
 

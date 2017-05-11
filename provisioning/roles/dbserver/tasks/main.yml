@@ -7,28 +7,36 @@
     - mysql-community-server  
     - mysql-community-client  
     - MySQL-python
+  become: true
 
 - name: Create Mysql configuration file
   template: src=my.cnf.j2 dest=/etc/my.cnf
   notify: 
     - restart mysql
+  become: true
 
 - name: Start Mysql Service
   service: name=mysqld state=started enabled=yes
+  become: true
 
 - name: insert MySQL iptables rule
-  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="{{mysql_port}}" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport {{mysql_port}} -j ACCEPT" 
+  lineinfile: dest=/etc/sysconfig/iptables state=present regexp="dport {{ mysql_port }}" insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport {{mysql_port}} -j ACCEPT" 
   notify: restart iptables
   when: iptables.stat.exists == true
+  become: true
 
 - name: Ensure MySQL root@localhost has password
   mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL,GRANT host='localhost' state=present check_implicit_admin=yes
+  become: true
 
 - name: Set MySQL root password for other hosts
   mysql_user: name={{ dbuser }} password={{ dbpassword }} priv=*.*:ALL,GRANT state=present check_implicit_admin=yes
+  become: true
 
 - name: Deletes anonymous MySQL server user for ansible_fqdn
   mysql_user: user="" host="{{ ansible_nodename }}" state="absent" check_implicit_admin=yes
+  become: true
 
 - name: Deletes anonymous MySQL server user for localhost
   mysql_user: user="" host="localhost" state="absent" check_implicit_admin=yes
+  become: true
