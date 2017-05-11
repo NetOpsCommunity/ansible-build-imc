@@ -1,8 +1,7 @@
 ---
 - name: Silent IMC install
   hosts: imcapp
-  remote_user: vagrant
-  sudo: yes
+  remote_user: root
   roles:
     - common
     - imcserver

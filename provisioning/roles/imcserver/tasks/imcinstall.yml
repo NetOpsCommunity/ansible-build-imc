@@ -6,15 +6,19 @@
   with_items:
     - expect
     - xorg-x11-server-Xvfb
+  become: true
 
 - name: imc install script
   copy: src=installsilence.sh dest=/root owner=root group=root mode=0755
+  become: true
 
 - name: imc expect script
   copy: src=installer.tcl dest=/root owner=root group=root mode=0755
+  become: true
 
 - name: imc install cfg
   template: src=install.cfg.j2 dest=/root/install.cfg
+  become: true
 
 # Needs script action to actually go and run the installer
 # Post install, set IMC to auto-start

@@ -3,6 +3,20 @@
 
 - name: ensure mysql-client installed
   yum: name=mysql-community-client state=installed
+  become: true
+
+- name: install unzip for decompressing install file
+  yum: name=unzip state=installed
+  become: true
+
+- name: Update x64-bit version of required libraries
+  yum: name={{item}} state=latest
+  with_items:
+    - glibc
+    - libaio
+    - libgcc
+    - libstdc++
+  become: true
 
 - name: ensure IMC prerequisite libraries installed
   yum: name={{item}} state=installed
@@ -11,23 +25,29 @@
     - libaio.i686
     - libgcc.i686
     - libstdc++.i686
+    - compat-libstdc++-33.i686
     - ftp
     - telnet
     - ksh
+  become: true
 
 # This is used to set specific parameters for the following groupinstall
 - name: copy yum-groups.conf
   copy: src=yum-groups.conf dest=/etc/yum/yum-groups.conf
+  become: true
 
 - name: Install X Window System
   yum: name="@X Window System" state=installed conf_file=/etc/yum/yum-groups.conf
+  become: true
 
 - name: insert iptables http rule
   lineinfile: dest=/etc/sysconfig/iptables state=present regexp="dport {{http_port}} " insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport {{http_port}} -j ACCEPT" 
   when: iptables.stat.exists == true
   notify: restart iptables
+  become: true
 
 - name: insert iptables https rule
   lineinfile: dest=/etc/sysconfig/iptables state=present regexp="dport {{https_port}} " insertafter="^:OUTPUT " line="-A INPUT -p tcp --dport {{https_port}} -j ACCEPT" 
   when: iptables.stat.exists == true
   notify: restart iptables
+  become: true

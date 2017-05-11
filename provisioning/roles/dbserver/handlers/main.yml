@@ -3,6 +3,8 @@
 
 - name: restart iptables
   service: name=iptables state=restarted
+  become: true
 
 - name: restart mysql
   service: name=mysqld state=restarted
+  become: true
